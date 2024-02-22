@@ -11,19 +11,18 @@ function generateLast15Dates() {
   return labels;
 }
 
-// Custom plugin for drawing a vertical line
 Chart.register({
   id: "crosshairPlugin",
   afterDraw: function (chart) {
     if (chart.crosshair && chart.crosshair.x !== undefined) {
       const ctx = chart.ctx;
-      const { x, y, y2, strokeStyle, lineWidth } = chart.crosshair;
+      const { x, y, y2 } = chart.crosshair;
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x, y2);
-      ctx.strokeStyle = strokeStyle || "rgba(255, 255, 255, 0.1)";
-      ctx.lineWidth = lineWidth || 1;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.5)"; // More visible stroke color
+      ctx.lineWidth = 2; // Wider line for better visibility
       ctx.stroke();
       ctx.restore();
     }
