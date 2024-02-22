@@ -14,10 +14,8 @@ function generateLast15Dates() {
 Chart.register({
   id: "crosshairPlugin",
   afterDraw: function (chart) {
-    console.log("Plugin afterDraw called"); // Confirm the plugin is called
     if (chart.crosshair && chart.crosshair.x !== undefined) {
       const { x, y, y2 } = chart.crosshair;
-      console.log(`Drawing line at x: ${x}`); // Log the x position for the line
       const ctx = chart.ctx;
       ctx.save();
       ctx.beginPath();
@@ -89,16 +87,7 @@ var insightChart = new Chart(ctx, {
         const x = firstPoint.element.x;
         const dataIndex = firstPoint.index;
 
-        // Assume the insights date and metrics elements exist in your HTML
-        // document.querySelector(
-        //   ".insights-date"
-        // ).textContent = `Date: ${labels[dataIndex]}`;
-        // document.getElementById("transactions-captured").textContent =
-        //   insightChart.data.datasets[0].data[dataIndex];
-        // document.getElementById("transactions-reported").textContent =
-        //   insightChart.data.datasets[1].data[dataIndex];
-        // document.getElementById("actionable-insights").textContent =
-        //   insightChart.data.datasets[2].data[dataIndex];
+        updateMetricsAndDate(dataIndex); // Call to update metrics and date
 
         insightChart.crosshair = {
           x,
@@ -108,28 +97,31 @@ var insightChart = new Chart(ctx, {
           lineWidth: 1,
         };
       }
-      insightChart.update("none");
     },
   },
 });
 
-// Initialize with the latest data point's metrics and date
-document.addEventListener("DOMContentLoaded", () => {
-  const latestIndex = labels.length - 1;
+function updateMetricsAndDate(dataIndex) {
   document.querySelector(
     ".insights-date"
-  ).textContent = `Date: ${labels[latestIndex]}`;
+  ).textContent = `Date: ${labels[dataIndex]}`;
   document.getElementById("transactions-captured").textContent =
-    insightChart.data.datasets[0].data[latestIndex];
+    insightChart.data.datasets[0].data[dataIndex];
   document.getElementById("transactions-reported").textContent =
-    insightChart.data.datasets[1].data[latestIndex];
+    insightChart.data.datasets[1].data[dataIndex];
   document.getElementById("actionable-insights").textContent =
-    insightChart.data.datasets[2].data[latestIndex];
+    insightChart.data.datasets[2].data[dataIndex];
+}
 
-  // Set initial crosshair to the latest data point
+// Delayed initialization to ensure chart is fully ready
+setTimeout(() => {
+  const latestIndex = labels.length - 1;
+  updateMetricsAndDate(latestIndex); // Initialize with the latest data
+
+  // Set initial crosshair position
   const latestDataPointX = insightChart.scales.x.getPixelForValue(
     null,
-    labels.length - 1
+    latestIndex
   );
   insightChart.crosshair = {
     x: latestDataPointX,
@@ -139,4 +131,4 @@ document.addEventListener("DOMContentLoaded", () => {
     lineWidth: 1,
   };
   insightChart.update();
-});
+}, 0); // setTimeout with 0 delay to defer execution until after the chart is initialized
