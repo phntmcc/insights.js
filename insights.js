@@ -10,6 +10,24 @@ function generateLast15Dates() {
   return labels;
 }
 
+Chart.register({
+  id: "crosshair",
+  afterDraw: function (chart, args, options) {
+    if (chart.crosshair) {
+      const { x, y, x2, y2, strokeStyle, lineWidth } = chart.crosshair;
+      const ctx = chart.ctx;
+      ctx.save();
+      ctx.strokeStyle = strokeStyle || "rgba(0, 0, 0, 0.1)";
+      ctx.lineWidth = lineWidth || 1;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.restore();
+    }
+  },
+});
+
 const labels = generateLast15Dates();
 
 var ctx = document.getElementById("insightChart").getContext("2d");
