@@ -132,3 +132,35 @@ setTimeout(() => {
   };
   insightChart.update();
 }, 0); // setTimeout with 0 delay to defer execution until after the chart is initialized
+
+// Function to toggle the dataset visibility and update button appearance
+function toggleDatasetVisibility(chart, datasetIndex, buttonId) {
+  const meta = chart.getDatasetMeta(datasetIndex);
+  // Toggle the hidden property
+  meta.hidden = !meta.hidden;
+
+  // Optionally, toggle a class or style on the button to indicate state
+  const button = document.getElementById(buttonId);
+  if (meta.hidden) {
+    button.classList.add("disabled");
+  } else {
+    button.classList.remove("disabled");
+  }
+
+  chart.update(); // Update the chart to reflect changes
+}
+
+// Attach event listeners to buttons
+document
+  .getElementById("transCapturedBtn")
+  .addEventListener("click", function () {
+    toggleDatasetVisibility(insightChart, 0, "transCapturedBtn");
+  });
+document
+  .getElementById("transReportBtn")
+  .addEventListener("click", function () {
+    toggleDatasetVisibility(insightChart, 1, "transReportBtn");
+  });
+document.getElementById("insightsBtn").addEventListener("click", function () {
+  toggleDatasetVisibility(insightChart, 2, "insightsBtn");
+});
