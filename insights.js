@@ -22,7 +22,7 @@ Chart.register({
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x, y2);
-      ctx.strokeStyle = strokeStyle || "rgba(0, 0, 0, 0.1)";
+      ctx.strokeStyle = strokeStyle || "rgba(255, 255, 255, 0.1)";
       ctx.lineWidth = lineWidth || 1;
       ctx.stroke();
       ctx.restore();
@@ -93,7 +93,7 @@ var insightChart = new Chart(ctx, {
           x,
           y,
           y2,
-          strokeStyle: "rgba(0, 0, 0, 0.1)",
+          strokeStyle: "rgba(255, 255, 255, 0.1)",
           lineWidth: 1,
         };
       }
