@@ -1,3 +1,4 @@
+// Function to generate the last 15 dates
 function generateLast15Dates() {
   const labels = [];
   for (let i = 14; i >= 0; i--) {
@@ -10,18 +11,19 @@ function generateLast15Dates() {
   return labels;
 }
 
+// Custom plugin for drawing a vertical line
 Chart.register({
-  id: "crosshair",
-  afterDraw: function (chart, args, options) {
-    if (chart.crosshair) {
-      const { x, y, x2, y2, strokeStyle, lineWidth } = chart.crosshair;
+  id: "crosshairPlugin",
+  afterDraw: function (chart) {
+    if (chart.crosshair && chart.crosshair.x !== undefined) {
       const ctx = chart.ctx;
+      const { x, y, y2, strokeStyle, lineWidth } = chart.crosshair;
       ctx.save();
-      ctx.strokeStyle = strokeStyle || "rgba(0, 0, 0, 0.1)";
-      ctx.lineWidth = lineWidth || 1;
       ctx.beginPath();
       ctx.moveTo(x, y);
-      ctx.lineTo(x2, y2);
+      ctx.lineTo(x, y2);
+      ctx.strokeStyle = strokeStyle || "rgba(0, 0, 0, 0.1)";
+      ctx.lineWidth = lineWidth || 1;
       ctx.stroke();
       ctx.restore();
     }
@@ -80,72 +82,36 @@ var insightChart = new Chart(ctx, {
       intersect: false,
       mode: "nearest",
     },
-    onHover: (event, chartElements, chart) => {
+    onHover: (event, chartElements) => {
       if (chartElements.length) {
         const firstPoint = chartElements[0];
         const x = firstPoint.element.x;
-        const y = chart.chartArea.top;
-        const x2 = firstPoint.element.x;
-        const y2 = chart.chartArea.bottom;
+        const y = insightChart.chartArea.top;
+        const y2 = insightChart.chartArea.bottom;
 
-        // Update the crosshair properties
-        chart.crosshair = {
+        insightChart.crosshair = {
           x,
           y,
-          x2,
           y2,
           strokeStyle: "rgba(0, 0, 0, 0.1)",
           lineWidth: 1,
         };
-      } else {
-        // Clear the crosshair
-        delete chart.crosshair;
       }
-      chart.draw();
+      // Note: Removed the else clause to keep the line displayed
     },
   },
 });
 
-function updateInsightsDateAndMetrics(dataIndex = labels.length - 1) {
-  const currentDateLabel = labels[dataIndex];
-  document.querySelector(".insights-date").textContent = `${currentDateLabel}`;
-  document.getElementById("transactions-captured").textContent =
-    insightChart.data.datasets[0].data[dataIndex];
-  document.getElementById("transactions-reported").textContent =
-    insightChart.data.datasets[1].data[dataIndex];
-  document.getElementById("actionable-insights").textContent =
-    insightChart.data.datasets[2].data[dataIndex];
-}
-
-// Custom Legend Functionality
-function toggleDataset(datasetIndex, buttonId) {
-  var meta = insightChart.getDatasetMeta(datasetIndex);
-  meta.hidden = !meta.hidden;
-  insightChart.update();
-
-  var button = document.getElementById(buttonId);
-  if (meta.hidden) {
-    button.classList.add("disabled");
-  } else {
-    button.classList.remove("disabled");
-  }
-}
-
-document
-  .getElementById("transCapturedBtn")
-  .addEventListener("click", () => toggleDataset(0, "transCapturedBtn"));
-document
-  .getElementById("transReportBtn")
-  .addEventListener("click", () => toggleDataset(1, "transReportBtn"));
-document
-  .getElementById("insightsBtn")
-  .addEventListener("click", () => toggleDataset(2, "insightsBtn"));
-
-// Initial update with the latest metrics and setup hover interaction
-updateInsightsDateAndMetrics();
-insightChart.options.onHover = (event, chartElement) => {
-  if (chartElement.length > 0) {
-    const dataIndex = chartElement[0].index;
-    updateInsightsDateAndMetrics(dataIndex);
-  }
+// Set initial crosshair to the latest data point
+const latestDataPointX = insightChart.scales.x.getPixelForValue(
+  null,
+  labels.length - 1
+);
+insightChart.crosshair = {
+  x: latestDataPointX,
+  y: insightChart.chartArea.top,
+  y2: insightChart.chartArea.bottom,
+  strokeStyle: "rgba(0, 0, 0, 0.1)",
+  lineWidth: 1,
 };
+insightChart.update();
