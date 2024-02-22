@@ -62,6 +62,29 @@ var insightChart = new Chart(ctx, {
       intersect: false,
       mode: "nearest",
     },
+    onHover: (event, chartElements, chart) => {
+      if (chartElements.length) {
+        const firstPoint = chartElements[0];
+        const x = firstPoint.element.x;
+        const y = chart.chartArea.top;
+        const x2 = firstPoint.element.x;
+        const y2 = chart.chartArea.bottom;
+
+        // Update the crosshair properties
+        chart.crosshair = {
+          x,
+          y,
+          x2,
+          y2,
+          strokeStyle: "rgba(0, 0, 0, 0.1)",
+          lineWidth: 1,
+        };
+      } else {
+        // Clear the crosshair
+        delete chart.crosshair;
+      }
+      chart.draw();
+    },
   },
 });
 
