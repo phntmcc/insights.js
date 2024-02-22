@@ -90,15 +90,15 @@ var insightChart = new Chart(ctx, {
         const dataIndex = firstPoint.index;
 
         // Assume the insights date and metrics elements exist in your HTML
-        document.querySelector(
-          ".insights-date"
-        ).textContent = `Date: ${labels[dataIndex]}`;
-        document.getElementById("transactions-captured").textContent =
-          insightChart.data.datasets[0].data[dataIndex];
-        document.getElementById("transactions-reported").textContent =
-          insightChart.data.datasets[1].data[dataIndex];
-        document.getElementById("actionable-insights").textContent =
-          insightChart.data.datasets[2].data[dataIndex];
+        // document.querySelector(
+        //   ".insights-date"
+        // ).textContent = `Date: ${labels[dataIndex]}`;
+        // document.getElementById("transactions-captured").textContent =
+        //   insightChart.data.datasets[0].data[dataIndex];
+        // document.getElementById("transactions-reported").textContent =
+        //   insightChart.data.datasets[1].data[dataIndex];
+        // document.getElementById("actionable-insights").textContent =
+        //   insightChart.data.datasets[2].data[dataIndex];
 
         insightChart.crosshair = {
           x,
