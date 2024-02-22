@@ -14,15 +14,17 @@ function generateLast15Dates() {
 Chart.register({
   id: "crosshairPlugin",
   afterDraw: function (chart) {
+    console.log("Plugin afterDraw called"); // Confirm the plugin is called
     if (chart.crosshair && chart.crosshair.x !== undefined) {
-      const ctx = chart.ctx;
       const { x, y, y2 } = chart.crosshair;
+      console.log(`Drawing line at x: ${x}`); // Log the x position for the line
+      const ctx = chart.ctx;
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x, y2);
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.5)"; // More visible stroke color
-      ctx.lineWidth = 2; // Wider line for better visibility
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+      ctx.lineWidth = 1;
       ctx.stroke();
       ctx.restore();
     }
@@ -82,35 +84,59 @@ var insightChart = new Chart(ctx, {
       mode: "nearest",
     },
     onHover: (event, chartElements) => {
-      if (chartElements.length) {
+      if (chartElements.length > 0) {
         const firstPoint = chartElements[0];
         const x = firstPoint.element.x;
-        const y = insightChart.chartArea.top;
-        const y2 = insightChart.chartArea.bottom;
+        const dataIndex = firstPoint.index;
+
+        // Assume the insights date and metrics elements exist in your HTML
+        document.querySelector(
+          ".insights-date"
+        ).textContent = `Date: ${labels[dataIndex]}`;
+        document.getElementById("transactions-captured").textContent =
+          insightChart.data.datasets[0].data[dataIndex];
+        document.getElementById("transactions-reported").textContent =
+          insightChart.data.datasets[1].data[dataIndex];
+        document.getElementById("actionable-insights").textContent =
+          insightChart.data.datasets[2].data[dataIndex];
 
         insightChart.crosshair = {
           x,
-          y,
-          y2,
+          y: insightChart.chartArea.top,
+          y2: insightChart.chartArea.bottom,
           strokeStyle: "rgba(255, 255, 255, 0.1)",
           lineWidth: 1,
         };
       }
-      // Note: Removed the else clause to keep the line displayed
+      insightChart.update("none");
     },
   },
 });
 
-// Set initial crosshair to the latest data point
-const latestDataPointX = insightChart.scales.x.getPixelForValue(
-  null,
-  labels.length - 1
-);
-insightChart.crosshair = {
-  x: latestDataPointX,
-  y: insightChart.chartArea.top,
-  y2: insightChart.chartArea.bottom,
-  strokeStyle: "rgba(0, 0, 0, 0.1)",
-  lineWidth: 1,
-};
-insightChart.update();
+// Initialize with the latest data point's metrics and date
+document.addEventListener("DOMContentLoaded", () => {
+  const latestIndex = labels.length - 1;
+  document.querySelector(
+    ".insights-date"
+  ).textContent = `Date: ${labels[latestIndex]}`;
+  document.getElementById("transactions-captured").textContent =
+    insightChart.data.datasets[0].data[latestIndex];
+  document.getElementById("transactions-reported").textContent =
+    insightChart.data.datasets[1].data[latestIndex];
+  document.getElementById("actionable-insights").textContent =
+    insightChart.data.datasets[2].data[latestIndex];
+
+  // Set initial crosshair to the latest data point
+  const latestDataPointX = insightChart.scales.x.getPixelForValue(
+    null,
+    labels.length - 1
+  );
+  insightChart.crosshair = {
+    x: latestDataPointX,
+    y: insightChart.chartArea.top,
+    y2: insightChart.chartArea.bottom,
+    strokeStyle: "rgba(255, 255, 255, 0.1)",
+    lineWidth: 1,
+  };
+  insightChart.update();
+});
